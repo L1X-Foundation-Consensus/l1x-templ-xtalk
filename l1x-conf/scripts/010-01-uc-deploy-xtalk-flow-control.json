@@ -1,0 +1,7 @@
+{
+  "smart_contract_deployment": [
+    "PRIVATE",
+    "L1XVM",
+    { "file": "/home/l1x/l1x-ws/l1x-artifacts/xtalk_flow_control.o" }
+  ]
+}

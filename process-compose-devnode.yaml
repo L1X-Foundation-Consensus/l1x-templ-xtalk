@@ -1,0 +1,42 @@
+version: "0.5"
+
+log_level: info
+log_location: devbox-services-devnode.log
+
+processes:
+  cassandra:
+    command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE up cassandra1 cassandra2"
+    is_daemon: true
+    shutdown:
+      command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE down cassandra1 cassandra2"
+    readiness_probe:
+      exec:
+        command: "cqlsh -e 'SELECT * FROM system.local;' $L1X_CFG_CASSANDRA_HOST $L1X_CFG_CASSANDRA_PORT"
+      initial_delay_seconds: 180
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 10
+    availability:
+      restart: "on_failure"
+      backoff_seconds: 2
+
+  l1x_node_server:
+    command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE up l1x-node"
+    is_daemon: true
+    shutdown:
+      command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE down  l1x-node"
+    readiness_probe:
+      exec:
+        command: "devbox run 08_check_chain_state | grep -qi 'head_block_number'"
+      initial_delay_seconds: 60
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 10
+    availability:
+      restart: "on_failure"
+      backoff_seconds: 5
+    depends_on:
+      cassandra:
+        condition: "process_healthy"

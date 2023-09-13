@@ -1,0 +1,27 @@
+[workspace]
+members = [
+	"l1x-contracts/source_registry",
+	"l1x-contracts/xtalk_flow_control",
+]
+
+[workspace.package]
+authors = ["l1x-team <info@l1x.foundation>"]
+edition = "2021"
+repository = "https://github.com/L1X-Foundation-VM/l1x-contracts/"
+
+[workspace.dependencies]
+borsh = { version = "0.9", features = ["const-generics"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+getrandom = { version = "0.2", features = ["js"] }
+bincode = { version = "2.0.0-rc" }
+sha2 = "0.9"
+base64 = "*"
+hex = "0.4"
+log = "0.4.20"
+
+# ethers
+ethers = { version = "2.0.10", default-features = false, features = ["ipc", "ws", "rustls"] }
+
+# l1x-sdk dependencies
+l1x-sdk = { git = "https://github.com/L1X-Foundation-VM/l1x-templ-sdk.git", package = "l1x-sdk", version = "0.1.1" }

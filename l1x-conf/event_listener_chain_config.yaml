@@ -1,0 +1,42 @@
+# - name: ethereum_mainnet
+#   compatibility: EVM
+#   provider: https://mainnet.infura.io/v3/
+#   need_api_key: true
+
+# - name: ethereum_goerli
+#   compatibility: evm
+#   provider: https://mainnet.infura.io/v3/
+#   need_api_key: true
+
+# - name: optimism_goerli
+#   compatibility: evm
+#   provider: https://optimism-mainnet.infura.io/v3/
+#   need_api_key: true
+
+- name: ethereum_goerli
+  compatibility: evm
+  provider: https://goerli.infura.io/v3/
+  need_api_key: true
+
+- name: optimism_goerli
+  compatibility: evm
+  provider: https://optimism-goerli.infura.io/v3/
+  need_api_key: true
+
+# - name: ethereum_mainnet
+#   compatibility: evm
+#   provider: https://mainnet.infura.io/v3/
+#   need_api_key: true
+# - name: bsc_mainnet
+#   compatibility: EVM
+#   provider: https://bsc-dataseed.binance.org/
+#   need_api_key: false
+# - name: solana_mainnet
+#   compatibility: solana
+#   provider: https://api.mainnet-beta.solana.com
+#   need_api_key: false
+#
+#- name: optimism_goerli
+#  compatibility: evm
+#  provider: https://optimism-goerli.infura.io/v3/
+#  need_api_key: true

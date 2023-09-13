@@ -1,0 +1,23 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "cassandra_4@4.1.2": {
+      "last_modified": "2023-09-04T16:24:30Z",
+      "resolved": "github:NixOS/nixpkgs/3c15feef7770eb5500a4b8792623e2d6f598c9c1#cassandra_4",
+      "source": "devbox-search",
+      "version": "4.1.2"
+    },
+    "nodejs@18.14.2": {
+      "last_modified": "2023-03-20T03:01:03Z",
+      "resolved": "github:NixOS/nixpkgs/8276a165b9fa3db1a7a4f29ee29b680e0799b9dc#nodejs",
+      "source": "devbox-search",
+      "version": "18.14.2"
+    },
+    "yarn@1.22.19": {
+      "last_modified": "2023-09-04T16:24:30Z",
+      "resolved": "github:NixOS/nixpkgs/3c15feef7770eb5500a4b8792623e2d6f598c9c1#yarn",
+      "source": "devbox-search",
+      "version": "1.22.19"
+    }
+  }
+}

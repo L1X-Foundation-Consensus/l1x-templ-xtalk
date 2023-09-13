@@ -1,0 +1,230 @@
+version: "3.8"
+services:
+  cassandra1:
+    image: cassandra:latest
+    container_name: cassandra1
+    environment:
+      - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack1
+      - CASSANDRA_CLUSTER_NAME=l1x-cassandra
+      - CASSANDRA_BROADCAST_ADDRESS=cassandra1
+      - CASSANDRA_LISTEN_ADDRESS=cassandra1
+    volumes:
+      - $L1X_CFG_CASSANDRA1_DATA:/var/lib/cassandra
+      - ./l1x-conf/cassandra-env.sh:/etc/cassandra/cassandra-env.sh
+    networks:
+      - l1x-devnet-network
+    healthcheck:
+      test: ["CMD", "nodetool", "status"]
+      interval: 15s
+      timeout: 7s
+      retries: 3
+      start_period: 30s
+    ports:
+      - $L1X_CFG_CASSANDRA_PORT:$L1X_CFG_CASSANDRA_PORT
+      - "7199:7199"
+
+  cassandra2:
+    image: cassandra:latest
+    container_name: cassandra2
+    environment:
+      - CASSANDRA_ENDPOINT_SNITCH=SimpleSnitch
+      - CASSANDRA_DC=datacenter1
+      - CASSANDRA_RACK=rack2
+      - CASSANDRA_SEEDS=cassandra1
+      - CASSANDRA_CLUSTER_NAME=l1x-cassandra
+      - CASSANDRA_LISTEN_ADDRESS=cassandra2
+    volumes:
+      - $L1X_CFG_CASSANDRA2_DATA:/var/lib/cassandra
+    networks:
+      - l1x-devnet-network
+    healthcheck:
+      test: ["CMD", "nodetool", "status"]
+      interval: 15s
+      timeout: 7s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - cassandra1
+
+  l1x-node:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh start-devnode
+          '
+    ports:
+      - 50051:50051
+      - 50052:50052
+      - 5010:5010
+    networks:
+      - l1x-devnet-network
+    restart: on-failure
+    depends_on:
+      - cassandra1
+
+  l1x-node-signer:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            RUST_LOG=info signing_and_broadcasting
+          '
+    networks:
+      - l1x-devnet-network
+    restart: on-failure
+
+  l1x-event-listener-leader:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh launch-event-handler 1
+          '
+    networks:
+      - l1x-devnet-network
+    ports:
+      - "$L1X_CFG_EVENT_LISTENER_LEADER_PORT:$L1X_CFG_EVENT_LISTENER_LEADER_PORT"
+    restart: on-failure
+
+  l1x-event-listener-regular1:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh launch-event-handler 2
+          '
+    networks:
+      - l1x-devnet-network
+    ports:
+      - "$L1X_CFG_EVENT_LISTENER_REGULAR1_PORT:$L1X_CFG_EVENT_LISTENER_REGULAR1_PORT"
+    restart: on-failure
+
+  l1x-event-listener-regular2:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh launch-event-handler 2
+          '
+    networks:
+      - l1x-devnet-network
+    ports:
+      - "$L1X_CFG_EVENT_LISTENER_REGULAR2_PORT:$L1X_CFG_EVENT_LISTENER_REGULAR2_PORT"
+    restart: on-failure
+
+  l1x-tools-intf-gen-ir:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh gen-ir
+          '
+
+  l1x-tools-intf-gen-bpf:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh gen-bpf
+          '
+
+  l1x-tools-get-account-state:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    networks:
+      - l1x-devnet-network
+    environment:
+      - L1X_CFG_CHAIN_TYPE=$L1X_CFG_CHAIN_TYPE
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh get-acc-state
+          '
+  l1x-tools-get-chain-state:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    networks:
+      - l1x-devnet-network
+    environment:
+      - L1X_CFG_CHAIN_TYPE=$L1X_CFG_CHAIN_TYPE
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh get-chain-state
+          '
+  l1x-tools-intf-sub-txn:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    networks:
+      - l1x-devnet-network
+    environment:
+      - L1X_CFG_CHAIN_TYPE=$L1X_CFG_CHAIN_TYPE
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh sub-txn
+          '
+  l1x-tools-intf-sub-sol:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    networks:
+      - l1x-devnet-network
+    environment:
+      - L1X_CFG_CHAIN_TYPE=$L1X_CFG_CHAIN_TYPE
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh sub-sol
+          '
+
+  l1x-tools-intf-read-only-func-call:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    networks:
+      - l1x-devnet-network
+    environment:
+      - L1X_CFG_CHAIN_TYPE=$L1X_CFG_CHAIN_TYPE
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh read-only-func-call
+          '
+
+  l1x-tools-intf-get-deployed-address:
+    image: $L1X_CFG_TOOLS
+    volumes:
+      - $PWD:/home/l1x/l1x-ws
+    entrypoint: /bin/bash -l
+    command: >
+          -c '
+            ./l1x-ws/l1x-conf/l1x-tools-intf.sh get-deployed-address
+          '
+
+networks:
+  l1x-devnet-network:
+    name: "l1x-devnet-network-shared"
+    ipam:
+      config:
+        - subnet: 172.16.1.0/24

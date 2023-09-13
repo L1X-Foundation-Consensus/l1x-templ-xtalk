@@ -1,0 +1,50 @@
+version: "0.5"
+
+log_level: info
+log_location: devbox-services-monitor.log
+
+processes:
+  l1x_event_listener_leader:
+    command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE up l1x-event-listener-leader"
+    is_daemon: true
+    shutdown:
+      command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE down  l1x-event-listener-leader"
+    availability:
+      restart: "on_failure"
+      backoff_seconds: 5
+
+  l1x_event_listener_regular1:
+    command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE up l1x-event-listener-regular1"
+    is_daemon: true
+    shutdown:
+      command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE down  l1x-event-listener-regular1"
+    availability:
+      restart: "on_failure"
+      backoff_seconds: 5
+
+  l1x_event_listener_regular2:
+    command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE up l1x-event-listener-regular2"
+    is_daemon: true
+    shutdown:
+      command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE down  l1x-event-listener-regular2"
+    availability:
+      restart: "on_failure"
+      backoff_seconds: 5
+
+  # l1x_node_signer:
+  #   command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE up l1x-node-signer"
+  #   is_daemon: true
+  #   shutdown:
+  #     command: "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE down  l1x-node-signer"
+  #   availability:
+  #     restart: "on_failure"
+  #     backoff_seconds: 5
+  #   depends_on:
+  #     l1x_node_server:
+  #       condition: "process_healthy"
+
+  # hardhat_testnode:
+  #   command: "cd $L1X_CFG_WS_HOME/eth-contracts/Balancer-v2/pkg/pool-stable && npx hardhat node"
+  #   is_daemon: true
+  #   shutdown:
+  #     command: "pkill --signal 9 -f 'npm exec hardhat node' && pkill --signal 9 -f 'hardhat node'"

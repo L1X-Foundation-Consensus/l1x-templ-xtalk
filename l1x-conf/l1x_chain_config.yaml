@@ -1,0 +1,12 @@
+networks:
+  beta_mainnet:
+    chain_id: 4
+    host_ip: 52.62.71.83
+    rpc_port: 50051
+    rpc_endpoint: http://52.62.71.83:50051
+
+  local_devnet:
+    chain_id: 5
+    host_ip: l1x-node
+    rpc_port: 50051
+    rpc_endpoint: http://l1x-node:50051
