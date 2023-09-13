@@ -37,6 +37,9 @@ export L1X_PROTO_PORT="50052"
 export L1X_ENDPOINT="http://l1x-node"
 export CLI_ARCH="docker"
 export L1X_CHAIN_CONFIG="/home/l1x/l1x-ws/l1x-conf/event_listener_chain_config.yaml"
+export L1X_P2P_WALLET="/home/l1x/l1x-ws/l1x-conf/event_listener_wallets.json"
+export USER_PRIVATE_KEY="e7efc71ab1b2055a474a6593159da8a113ad7025dca27a870e9d535501f1687c"
+export CHAIN_ID=5
 
 export ETHEREUM_GOERLI=904a9154641d44348e7fab88570219e9
 export OPTIMISM_GOERLI=904a9154641d44348e7fab88570219e9

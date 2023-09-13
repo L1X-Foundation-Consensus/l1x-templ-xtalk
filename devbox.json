@@ -59,11 +59,13 @@
       ],
       "05_start_monitor_signer_node": [
         "echo 'Start L1X Offchain Monitor Signer Node Service ...'",
-        "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE run --rm l1x-node-signer"
+        "log_trace_file=$L1X_CFG_TRACES/l1x-node-signer-$(date '+%d-%m-%y-%H%M').txt",
+        "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE run --rm l1x-node-signer 2>&1 | tee $log_trace_file"
       ],
       "06_stop_monitor_services": [
         "echo 'Stop L1X Offchain Monitor Services...'",
         "docker stop $(docker ps -a | grep 'l1x-event-listener' | awk '{print $1}')",
+        "docker stop $(docker ps -a | grep 'l1x-node-signer' | awk '{print $1}')",
         "echo 'Stop Offchain Monitor Services... Done!!!'"
       ],
       "07_prune_devnode": [
@@ -110,7 +112,8 @@
         "echo Cleaning the workspace artifacts ...",
         "cargo clean",
         "rm -Rf $L1X_CFG_ARTIFACTS/*.*",
-        "cd $L1X_CFG_WS_HOME/eth-contracts/Balancer-v2/pkg/pool-stable && npx hardhat clean"
+        "rm -Rf $L1X_CFG_TRACES/*.*",
+        "devbox run 11_clean_logs"
       ],
       "11_clean_logs": ["rm -Rf ./devbox-services.log"],
       "12_deploy_l1x_contract_cmd": [
@@ -148,17 +151,17 @@
         "sleep 10",
         "devbox run 13_init_l1x_contract_cmd 011-02-uc-init-source-registry.json"
       ],
-      "18_register_source": [
+      "18_trans_register_source": [
         "echo event-registry call register_new_source",
         "devbox run 13_init_l1x_contract_cmd 012-01-uc-event-registry-register-new-source.json"
       ],
-      "13_l1x_contract_read_only_call_cmd": [
+      "13_ro_l1x_contract_read_only_call_cmd": [
         "echo Init Contract $1",
         "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE run --rm -e INTF_ARG_OWNER=super -e INTF_ARG_PAYLOAD=$1 l1x-tools-intf-read-only-func-call"
       ],
-      "18_l1x_contract_registry_get_sources_from": [
+      "18_ro_l1x_contract_registry_get_sources_from": [
         "echo event-registry call register_new_source",
-        "devbox run 13_l1x_contract_read_only_call_cmd 012-02-uc-event-registry-get-source-from.json"
+        "devbox run 13_ro_l1x_contract_read_only_call_cmd 012-02-uc-event-registry-get-source-from.json"
       ],
       "15_ft_token_balance_ava": [
         "echo token_balance_ava ::",
