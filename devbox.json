@@ -2,7 +2,7 @@
   "packages": ["cassandra_4@4.1.2", "nodejs@18.14.2", "yarn@1.22.19"],
   "env": {
     "L1X_CFG_CHAIN_TYPE": "local_devnet",
-    "L1X_CFG_TOOLS": "l1x-toolkit:0.3",
+    "L1X_CFG_TOOLS": "kevincoutinho007/l1x-toolkit:0.3",
     "L1X_CFG_WS_HOME": "$PWD",
     "L1X_CFG_ARTIFACTS": "$PWD/l1x-artifacts",
     "L1X_CFG_TRACES": "$PWD/l1x-traces",
@@ -97,17 +97,6 @@
         "echo Compiling Contract $L1X_CFG_CONTRACT2 ...",
         "devbox run 10_compile_l1x_cmd $L1X_CFG_CONTRACT2"
       ],
-      "10_eth_erc20_build": [
-        "echo Compiling Eth ERC20 Contracts for L1X EVM...",
-        "cd $L1X_CFG_WS_HOME/eth-contracts/Balancer-v2/pkg/pool-stable",
-        "echo $PWD && yarn run build",
-        "npx hardhat run ./deploy/deploy.ts --network localhost",
-        "cp ./creationCode/*.txt $L1X_CFG_ARTIFACTS/."
-      ],
-      "10_eth_l1x_nft_build": [
-        "echo Compiling Eth Contracts ...",
-        "cd $L1X_CFG_WS_HOME/eth-contracts/l1x-nft && npx hardhat compile"
-      ],
       "11_clean": [
         "echo Cleaning the workspace artifacts ...",
         "cargo clean",
@@ -125,21 +114,6 @@
         "devbox run 12_deploy_l1x_contract_cmd 010-01-uc-deploy-xtalk-flow-control.json",
         "sleep 10",
         "devbox run 12_deploy_l1x_contract_cmd 010-02-uc-deploy-source-registry.json"
-      ],
-      "12_deploy_eth_contracts_cmd": [
-        "echo ==== Deploying $1 to L1X EVM ====",
-        "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE run --rm -e INTF_ARG_OWNER=super -e INTF_ARG_PAYLOAD=$1 l1x-tools-intf-sub-sol",
-        "sleep 10",
-        "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE run --rm l1x-tools-intf-get-deployed-address",
-        "echo ==== Deploying $1 to L1X EVM Done ===="
-      ],
-      "12_deploy_eth_pool_base_contracts": [
-        "echo Deploying Contract creationCodePool.txt to L1X EVM",
-        "devbox run 12_deploy_eth_contracts_cmd 011-01-l1x-evm-deploy-creationCode20.json",
-        "devbox run 12_deploy_eth_contracts_cmd 011-02-l1x-evm-deploy-creationCode202.json",
-        "devbox run 12_deploy_eth_contracts_cmd 011-03-l1x-evm-deploy-creationWeth.json",
-        "devbox run 12_deploy_eth_contracts_cmd 011-04-l1x-evm-deploy-creationRateProvider.json",
-        "devbox run 12_deploy_eth_contracts_cmd 011-05-l1x-evm-deploy-creationRateProvider2.json"
       ],
       "13_init_l1x_contract_cmd": [
         "echo Init Contract $1",
@@ -162,31 +136,6 @@
       "18_ro_l1x_contract_registry_get_sources_from": [
         "echo event-registry call register_new_source",
         "devbox run 13_ro_l1x_contract_read_only_call_cmd 012-02-uc-event-registry-get-source-from.json"
-      ],
-      "15_ft_token_balance_ava": [
-        "echo token_balance_ava ::",
-        "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE run --rm -e INTF_ARG_OWNER=ava -e INTF_ARG_PAYLOAD=010-03-uc-check-ava-balance.json l1x-tools-intf-read-only-func-call"
-      ],
-      "16_ft_token_balance_bobby": [
-        "echo token_balance_bobby ::",
-        "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE run --rm -e INTF_ARG_OWNER=bobby -e INTF_ARG_PAYLOAD=010-04-uc-check-bobby-balance.json l1x-tools-intf-read-only-func-call"
-      ],
-      "17_ft_token_balance_emma": [
-        "echo token_balance_emma ::",
-        "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE run --rm -e INTF_ARG_OWNER=emma -e INTF_ARG_PAYLOAD=010-05-uc-check-emma-balance.json l1x-tools-intf-read-only-func-call"
-      ],
-      "30_chk_balance_super": [
-        "echo chk_balance_super",
-        "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE run --rm -e INTF_ARG_OWNER=super l1x-tools-get-account-state"
-      ],
-      "31_chk_balance_ava": [
-        "echo chk_balance_ava",
-        "$L1X_CFG_DC_CMD_INTF -f $L1X_CFG_DC_FILE run --rm -e INTF_ARG_OWNER=ava l1x-tools-get-account-state"
-      ],
-      "99_test": [
-        "echo 99_test",
-        "echo Print all :: $@",
-        "echo Print args :: $0, $1, $2"
       ]
     }
   }
