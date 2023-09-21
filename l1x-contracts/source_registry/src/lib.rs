@@ -155,9 +155,10 @@ impl SourceRegistry {
 // this is to verify that the caller is allowed to register source. need "get_contract_admins" to be implemented.
 //
 // let call = l1x_sdk::contract_interaction::ContractCall {
-//     conract_address: l1x_sdk::types::Address::try_from(new_source.clone().flow_contract_address).map_err(|e| e.to_string())?,
+//     contract_address: l1x_sdk::types::Address::try_from(new_source.clone().flow_contract_address).map_err(|e| e.to_string())?,
 //     method_name: "get_contract_admins".to_string(),
 //     args: vec![],
+//     read_only: true,
 //     fee_limit: 0,
 // };
 // let res = l1x_sdk::call_contract(&call).ok_or("Failed to call contract")?;
